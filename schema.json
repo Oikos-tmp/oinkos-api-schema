@@ -1,0 +1,189 @@
+{
+  "$schema": "https://spec.openapis.org/oas/3.0/schema/2024-10-18",
+  "openapi": "3.0.0",
+  "info": { "version": "1.0.0", "title": "Oinkos" },
+  "servers": [{ "url": "https://api.oinkos.samnsc.com" }],
+  "tags": [],
+  "paths": {
+    "/user": {
+      "get": {
+        "description": "Get current user information",
+        "operationId": "get_user",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successful Response": {
+                    "value": {
+                      "username": "samuel",
+                      "id": "AC0F4E43-F4A7-4E56-93F2-C868DEEEDE16",
+                      "email": "example@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid or Missing Bearer Token": {
+                    "value": { "error": true, "reason": "Unauthorized" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BearerAuth": [] }]
+      }
+    },
+    "/signup": {
+      "post": {
+        "description": "Create new user",
+        "operationId": "get_signup",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successfully Created New User": {
+                    "value": {
+                      "token": "6nYslmukvt3Ip5oyofSYkA=="
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Malformed Request Body": {
+                    "value": {
+                      "error": true,
+                      "reason": "Malformed syntax"
+                    }
+                  },
+                  "Mismatched Password and Password Confirmation": {
+                    "value": {
+                      "error": true,
+                      "reason": "Mismatched passwords"
+                    }
+                  },
+                  "Non-unique Username": {
+                    "value": {
+                      "error": true,
+                      "reason": "A user with that username already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Value(s)": {
+                    "value": {
+                      "error": true,
+                      "reason": "Invalid value(s)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unknown Server Error": {
+                    "value": {
+                      "error": true,
+                      "reason": "Internal Server Error"
+                    }
+                  },
+                  "Failed to Save User": {
+                    "value": {
+                      "error": true,
+                      "reason": "Failed to save user"
+                    }
+                  },
+                  "Unable to Generate User Authentication Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unable to generate authentication token for user"
+                    }
+                  },
+                  "Failed to Save User Authentication Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "Failed to save user authentication token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "username": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "confirmPassword": { "type": "string" }
+                },
+                "type": "object",
+                "required": ["username", "email", "password", "confirmPassword"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "",
+        "operationId": "post_login",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "newExample": {
+                    "value": { "token": "sy+B3wxT0v/nI4VvBq4R+w==" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "security": [{ "BasicAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": { "type": "http", "scheme": "bearer" },
+      "BasicAuth": { "type": "http", "scheme": "basic" }
+    }
+  }
+}
