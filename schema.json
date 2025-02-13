@@ -1,6 +1,6 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.0", "title": "Oinkos" },
+  "info": { "version": "1.0.1", "title": "Oinkos" },
   "servers": [{ "url": "https://api.oinkos.samnsc.com" }],
   "tags": [],
   "paths": {
@@ -10,7 +10,7 @@
         "operationId": "get_user",
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "OK",
             "content": {
               "application/json": {
                 "examples": {
@@ -158,16 +158,49 @@
     },
     "/login": {
       "post": {
-        "description": "",
+        "description": "Get user authentication token from username and password",
         "operationId": "post_login",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "OK",
             "content": {
               "application/json": {
                 "examples": {
-                  "newExample": {
+                  "Successfull Login": {
                     "value": { "token": "sy+B3wxT0v/nI4VvBq4R+w==" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid or Missing Credentials": {
+                    "value": { "error": true, "reason": "Unauthorized" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Unable to Generate User Authentication Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unable to generate authentication token for user"
+                    }
+                  },
+                  "Failed to Save User Authentication Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "Failed to save user authentication token"
+                    }
                   }
                 }
               }
