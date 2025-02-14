@@ -1,6 +1,6 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.1", "title": "Oinkos" },
+  "info": { "version": "1.0.2", "title": "Oinkos" },
   "servers": [{ "url": "https://api.oinkos.samnsc.com" }],
   "tags": [],
   "paths": {
@@ -18,7 +18,8 @@
                     "value": {
                       "username": "samuel",
                       "id": "AC0F4E43-F4A7-4E56-93F2-C868DEEEDE16",
-                      "email": "example@example.com"
+                      "email": "example@example.com",
+                      "balance": 0
                     }
                   }
                 }
@@ -30,8 +31,26 @@
             "content": {
               "application/json": {
                 "examples": {
-                  "Invalid or Missing Bearer Token": {
-                    "value": { "error": true, "reason": "Unauthorized" }
+                  "Invalid Bearer Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "JWTKitError(errorType: signatureVerificationFailed)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Malformed Bearer Token": {
+                    "value": {
+                      "reason": "Something went wrong.",
+                      "error": true
+                    }
                   }
                 }
               }
@@ -54,7 +73,7 @@
                 "examples": {
                   "Successfully Created New User": {
                     "value": {
-                      "token": "6nYslmukvt3Ip5oyofSYkA=="
+                      "token": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NEIyRTEyQi1CQ0U3LTQxQkEtOTQ3RC00MUQ1NTVBRTlFMkIiLCJleHBpcmF0aW9uIjoxNzQ3MzQ3NTYwLjU1ODU3OX0.ios5ERyZSrrhvduzKz1enGSHJbVw_4PJS5PmLpIIpB3TwKh0nV3AkTrXMzsLd0yCcw2ljGIMz-Bght3_gSqBdA"
                     }
                   }
                 }
@@ -125,12 +144,6 @@
                       "error": true,
                       "reason": "Unable to generate authentication token for user"
                     }
-                  },
-                  "Failed to Save User Authentication Token": {
-                    "value": {
-                      "error": true,
-                      "reason": "Failed to save user authentication token"
-                    }
                   }
                 }
               }
@@ -167,7 +180,9 @@
               "application/json": {
                 "examples": {
                   "Successfull Login": {
-                    "value": { "token": "sy+B3wxT0v/nI4VvBq4R+w==" }
+                    "value": {
+                      "token": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NEIyRTEyQi1CQ0U3LTQxQkEtOTQ3RC00MUQ1NTVBRTlFMkIiLCJleHBpcmF0aW9uIjoxNzQ3MzQ3NTYwLjU1ODU3OX0.ios5ERyZSrrhvduzKz1enGSHJbVw_4PJS5PmLpIIpB3TwKh0nV3AkTrXMzsLd0yCcw2ljGIMz-Bght3_gSqBdA"
+                    }
                   }
                 }
               }
@@ -194,12 +209,6 @@
                     "value": {
                       "error": true,
                       "reason": "Unable to generate authentication token for user"
-                    }
-                  },
-                  "Failed to Save User Authentication Token": {
-                    "value": {
-                      "error": true,
-                      "reason": "Failed to save user authentication token"
                     }
                   }
                 }
