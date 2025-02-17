@@ -34,22 +34,7 @@
                   "Invalid Bearer Token": {
                     "value": {
                       "error": true,
-                      "reason": "JWTKitError(errorType: signatureVerificationFailed)"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "Malformed Bearer Token": {
-                    "value": {
-                      "reason": "Something went wrong.",
-                      "error": true
+                      "reason": "Unauthorized"
                     }
                   }
                 }
