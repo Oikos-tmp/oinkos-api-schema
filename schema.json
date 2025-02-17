@@ -1,6 +1,6 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.2", "title": "Oinkos" },
+  "info": { "version": "1.0.3", "title": "Oinkos" },
   "servers": [{ "url": "https://api.oinkos.samnsc.com" }],
   "tags": [],
   "paths": {
@@ -16,6 +16,7 @@
                 "examples": {
                   "Successful Response": {
                     "value": {
+                      "error": false,
                       "username": "samuel",
                       "id": "AC0F4E43-F4A7-4E56-93F2-C868DEEEDE16",
                       "email": "example@example.com",
@@ -34,7 +35,28 @@
                   "Invalid Bearer Token": {
                     "value": {
                       "error": true,
+                      "reason": "JWTKitError(errorType: signatureVerificationFailed)"
+                    }
+                  },
+                  "Unauthorized": {
+                    "value": {
+                      "error": true,
                       "reason": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Malformed Bearer Token": {
+                    "value": {
+                      "reason": "Something went wrong.",
+                      "error": true
                     }
                   }
                 }
@@ -58,6 +80,7 @@
                 "examples": {
                   "Successfully Created New User": {
                     "value": {
+                      "error": false,
                       "token": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NEIyRTEyQi1CQ0U3LTQxQkEtOTQ3RC00MUQ1NTVBRTlFMkIiLCJleHBpcmF0aW9uIjoxNzQ3MzQ3NTYwLjU1ODU3OX0.ios5ERyZSrrhvduzKz1enGSHJbVw_4PJS5PmLpIIpB3TwKh0nV3AkTrXMzsLd0yCcw2ljGIMz-Bght3_gSqBdA"
                     }
                   }
@@ -166,6 +189,7 @@
                 "examples": {
                   "Successfull Login": {
                     "value": {
+                      "error": false,
                       "token": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NEIyRTEyQi1CQ0U3LTQxQkEtOTQ3RC00MUQ1NTVBRTlFMkIiLCJleHBpcmF0aW9uIjoxNzQ3MzQ3NTYwLjU1ODU3OX0.ios5ERyZSrrhvduzKz1enGSHJbVw_4PJS5PmLpIIpB3TwKh0nV3AkTrXMzsLd0yCcw2ljGIMz-Bght3_gSqBdA"
                     }
                   }
