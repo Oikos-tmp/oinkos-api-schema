@@ -1,6 +1,6 @@
 {
   "openapi": "3.0.0",
-  "info": { "version": "1.0.3", "title": "Oinkos" },
+  "info": { "version": "1.0.4", "title": "Oinkos" },
   "servers": [{ "url": "https://api.oinkos.samnsc.com" }],
   "tags": [],
   "paths": {
@@ -108,7 +108,7 @@
                   "Non-unique Username": {
                     "value": {
                       "error": true,
-                      "reason": "A user with that username already exists"
+                      "reason": "A user with that username or email already exists"
                     }
                   }
                 }
@@ -227,6 +227,390 @@
         },
         "parameters": [],
         "security": [{ "BasicAuth": [] }]
+      }
+    },
+    "/transaction": {
+      "get": {
+        "description": "Get transactions based on filters",
+        "operationId": "get_transaction",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successfully got Filtered Transactions": {
+                    "value": {
+                      "error": false,
+                      "startingDate": "2025-01-30T03:00:00Z",
+                      "endingDate": "2025-03-31T03:00:00Z",
+                      "transactions": [
+                        {
+                          "value": 20.8,
+                          "paymentType": "directTransfer",
+                          "transactionDate": "2025-02-17T03:00:00Z",
+                          "transactionType": "unique",
+                          "category": "Contas",
+                          "occurrence": 1,
+                          "transactionStatus": "credited",
+                          "title": "Conta de Luz"
+                        },
+                        {
+                          "paymentType": "directTransfer",
+                          "category": "Contas",
+                          "transactionStatus": "credited",
+                          "title": "Conta de Luz",
+                          "occurrence": 1,
+                          "value": 20.8,
+                          "transactionType": "unique",
+                          "transactionDate": "2025-02-17T03:00:00Z"
+                        },
+                        {
+                          "paymentType": "creditCard",
+                          "occurrence": 1,
+                          "transactionDate": "2025-01-31T03:00:00Z",
+                          "value": 178.8,
+                          "transactionStatus": "credited",
+                          "title": "Supermercado",
+                          "category": "Lar",
+                          "transactionType": "recurring"
+                        },
+                        {
+                          "title": "Supermercado",
+                          "occurrence": 2,
+                          "transactionStatus": "skipped",
+                          "transactionDate": "2025-02-28T03:00:00Z",
+                          "value": 178.8,
+                          "paymentType": "creditCard",
+                          "category": "Lar",
+                          "transactionType": "recurring"
+                        },
+                        {
+                          "value": 178.8,
+                          "title": "Supermercado",
+                          "occurrence": 3,
+                          "transactionStatus": "credited",
+                          "transactionType": "recurring",
+                          "paymentType": "creditCard",
+                          "transactionDate": "2025-03-31T03:00:00Z",
+                          "category": "Lar"
+                        },
+                        {
+                          "transactionDate": "2025-03-03T03:00:00Z",
+                          "value": 178.8,
+                          "title": "Supermercado",
+                          "transactionType": "recurring",
+                          "category": "Lar",
+                          "occurrence": 1,
+                          "transactionStatus": "credited",
+                          "paymentType": "creditCard"
+                        },
+                        {
+                          "occurrence": 1,
+                          "value": 178.8,
+                          "transactionStatus": "credited",
+                          "paymentType": "creditCard",
+                          "title": "Supermercado",
+                          "category": "Lar",
+                          "transactionType": "recurring",
+                          "transactionDate": "2025-02-28T03:00:00Z"
+                        },
+                        {
+                          "transactionType": "recurring",
+                          "transactionStatus": "credited",
+                          "title": "Supermercado",
+                          "value": 178.8,
+                          "occurrence": 2,
+                          "transactionDate": "2025-03-28T03:00:00Z",
+                          "paymentType": "creditCard",
+                          "category": "Lar"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "boolean", "default": true },
+                    "reason": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "Malformed Request Body": {
+                    "value": {
+                      "error": true,
+                      "reason": "Malformed syntax"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Bearer Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "JWTKitError(errorType: signatureVerificationFailed)"
+                    }
+                  },
+                  "Unauthorized": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Value(s)": {
+                    "value": {
+                      "error": true,
+                      "reason": "Invalid value(s)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Malformed Bearer Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "Something went wrong."
+                    }
+                  },
+                  "Error Querying the Database": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unable to query database for transactions"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "onlyInclude": {
+                    "type": "string",
+                    "enum": ["recurring", "unique"]
+                  },
+                  "paymentType": {
+                    "type": "string",
+                    "enum": [
+                      "creditCard",
+                      "debitCard",
+                      "cash",
+                      "directTransfer"
+                    ]
+                  },
+                  "category": { "type": "string" },
+                  "startingDate": { "type": "string", "pattern": "date" },
+                  "endingDate": { "type": "string", "pattern": "date" }
+                },
+                "type": "object",
+                "required": ["startingDate", "endingDate"]
+              }
+            }
+          }
+        },
+        "security": [{ "BearerAuth": [] }]
+      },
+      "post": {
+        "description": "Create new transaction",
+        "operationId": "post_transaction",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successfully Create New Transaction": {
+                    "value": {
+                      "error": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": { "type": "boolean", "default": true },
+                    "reason": { "type": "string" }
+                  }
+                },
+                "examples": {
+                  "Malformed Request Body": {
+                    "value": {
+                      "error": true,
+                      "reason": "Malformed syntax"
+                    }
+                  },
+                  "Duplicate Category": {
+                    "description": "Should never be returned, if it is, it was caused by a server error",
+                    "value": {
+                      "error": true,
+                      "reason": "A category with that name already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Bearer Token": {
+                    "value": {
+                      "error": true,
+                      "reason": "JWTKitError(errorType: signatureVerificationFailed)"
+                    }
+                  },
+                  "Unauthorized": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Invalid Value(s)": {
+                    "value": {
+                      "error": true,
+                      "reason": "Invalid value(s)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Malformed Bearer Token": {
+                    "value": {
+                      "reason": "Something went wrong.",
+                      "error": true
+                    }
+                  },
+                  "Error Fetching Category from Database": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unable to fetch categories from the database"
+                    }
+                  },
+                  "Error Saving Category to Database": {
+                    "value": {
+                      "error": true,
+                      "reason": "Unable to save new category to the database"
+                    }
+                  },
+                  "Error Saving Transaction to Database": {
+                    "value": {
+                      "error": true,
+                      "reason": "Failed to save transaction to the database"
+                    }
+                  },
+                  "Invalid User or Category Values": {
+                    "description": "Should never be returned, if it is, it was caused by a server error",
+                    "value": {
+                      "error": true,
+                      "reason": "Invalid user or category values"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "transactionType": {
+                    "type": "string",
+                    "format": "enum",
+                    "enum": ["unique", "recurring"]
+                  },
+                  "title": { "type": "string" },
+                  "value": { "type": "number" },
+                  "paymentType": {
+                    "type": "string",
+                    "format": "enum",
+                    "enum": [
+                      "creditCard",
+                      "debitCard",
+                      "cash",
+                      "directTransfer"
+                    ]
+                  },
+                  "category": { "type": "string" },
+                  "transactionDate": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Only for unique transaction type"
+                  },
+                  "startingDate": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Only for recurring transaction type"
+                  },
+                  "endingDate": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Only for recurring transaction type"
+                  }
+                },
+                "required": ["title", "value", "paymentType", "category"]
+              }
+            }
+          }
+        },
+        "security": [{ "BearerAuth": [] }]
       }
     }
   },
