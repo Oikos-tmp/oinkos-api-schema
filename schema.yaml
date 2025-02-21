@@ -354,6 +354,7 @@ paths:
                     - directTransfer
                 category:
                   type: string
+                  maxLength: 100
                 transactionDate:
                   description: Only for and required by the unique transaction type
                   type: string
