@@ -10,7 +10,6 @@ paths:
       operationId: get_user
       security:
         - BearerAuth: []
-
       responses:
         200:
           description: OK
@@ -28,8 +27,126 @@ paths:
                     type: string
                   email:
                     type: string
+                    format: email
                   balance:
                     type: number
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /signup:
+    post:
+      description: Create new user
+      operationId: get_signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - confirmPassword
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  token:
+                    type: string
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Malformed syntax
+                      - Mismatched passwords
+                      - A user with that username or email already exists
+        422:
+          description: Unprocessable Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Invalid value(s)
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Internal Server Error
+                      - Failed to save user
+                      - Unable to generate authentication token for user
+  /login:
+    post:
+      description: Get user authentication token from username and password
+      operationId: post_login
+      security:
+        - BasicAuth: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  token:
+                    type: string
         401:
           description: Unauthorized
           content:
@@ -39,14 +156,308 @@ paths:
                 properties:
                   error:
                     type: boolean
-                    default: true
+                    enum:
+                      - true
                   reason:
                     type: string
                     enum:
-                      - "JWTKitError(errorType: signatureVerificationFailed)"
                       - Unauthorized
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Unable to generate authentication token for user
+  /transaction:
+    get:
+      description: Get transactions based on filters
+      operationId: get_transaction
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: startingDate
+          required: true
+          schema:
+            type: integer
+            format: timestamp
+        - in: query
+          name: endingDate
+          required: true
+          schema:
+            type: integer
+            format: timestamp
+        - in: query
+          name: onlyInclude
+          schema:
+            type: string
+            enum:
+              - unique
+              - recurring
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: paymentType
+          schema:
+            type: string
+            enum:
+              - creditCard
+              - debitCard
+              - cash
+              - directTransfer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  startingDate:
+                    type: string
+                    format: date-time
+                  endingDate:
+                    type: string
+                    format: date-time
+                  transactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionType:
+                          type: string
+                          enum:
+                            - unique
+                            - recurring
+                        title:
+                          type: string
+                        transactionStatus:
+                          type: string
+                          enum:
+                            - credited
+                            - skipped
+                        value:
+                          type: number
+                        paymentType:
+                          type: string
+                          enum:
+                            - creditCard
+                            - debitCard
+                            - cash
+                            - directTransfer
+                        category:
+                          type: string
+                        transactionDate:
+                          type: string
+                          format: date-time
+                        occurrence:
+                          type: integer
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Malformed syntax
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        422:
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Invalid value(s)
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to query database for transactions
+    post:
+      description: Create new transaction
+      operationId: post_transaction
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transactionType
+                - title
+                - value
+                - paymentType
+                - category
+              properties:
+                transactionType:
+                  type: string
+                  enum:
+                    - unique
+                    - recurring
+                title:
+                  type: string
+                value:
+                  type: number
+                paymentType:
+                  type: string
+                  enum:
+                    - creditCard
+                    - debitCard
+                    - cash
+                    - directTransfer
+                category:
+                  type: string
+                transactionDate:
+                  description: Only for and required by the unique transaction type
+                  type: string
+                  format: date-time
+                startingDate:
+                  description: Only for and required by the recurring transaction type
+                  type: string
+                  format: date-time
+                endingDate:
+                  description: Only for the recurring transaction type
+                  type: string
+                  format: date-time
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Malformed syntax
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        422:
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Invalid value(s)
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to fetch categories from the database
+                          - Unable to save new category to the database
+                          - Failed to save transaction to the database
 
 components:
+  schemas:
+    Unauthorized:
+      type: object
+      properties:
+        error:
+          type: boolean
+          enum:
+            - true
+        reason:
+          type: string
+          enum:
+            - "JWTKitError(errorType: signatureVerificationFailed)"
+            - Unauthorized
+    Error:
+      type: object
+      properties:
+        error:
+          type: boolean
+          enum:
+            - true
+        reason:
+          type: string
+          enum:
+            - Something went wrong.
   securitySchemes:
     BasicAuth:
       type: http
