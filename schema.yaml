@@ -2,7 +2,7 @@
 openapi: 3.0.0
 info:
   title: Oinkos
-  version: 1.0.5
+  version: 1.0.6
 paths:
   /user:
     get:
@@ -28,7 +28,7 @@ paths:
                   email:
                     type: string
                     format: email
-                  balance:
+                  salary:
                     type: number
         401:
           description: Unauthorized
@@ -42,6 +42,142 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    patch:
+      description: Edit the current user
+      operationId: patch_user
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+                salary:
+                  type: number
+                  minimum: 0
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  username:
+                    type: string
+                  id:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  salary:
+                    type: number
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Malformed syntax
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        422:
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Invalid value(s)
+                      - Passwords must match
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to hash password
+                          - Failed to save updated user
+    delete:
+      description: Delete the current user
+      operationId: delete_user
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        default: false
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to delete user
   /signup:
     post:
       description: Create new user
@@ -66,6 +202,9 @@ paths:
                   type: string
                 confirmPassword:
                   type: string
+                salary:
+                  type: number
+                  minimum: 0
       responses:
         200:
           description: OK
