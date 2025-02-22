@@ -3,6 +3,8 @@ openapi: 3.0.0
 info:
   title: Oinkos
   version: 1.0.6
+servers:
+  - url: https://api.oinkos.samnsc.com
 paths:
   /user:
     get:
