@@ -2,7 +2,7 @@
 openapi: 3.0.0
 info:
   title: Oinkos
-  version: 1.0.6
+  version: 1.0.7
 servers:
   - url: https://api.oinkos.samnsc.com
 paths:
@@ -574,6 +574,50 @@ paths:
                           - Unable to fetch categories from the database
                           - Unable to save new category to the database
                           - Failed to save transaction to the database
+  /category:
+    get:
+      description: Get all categories for the current user
+      operationId: get_category
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+                  categories:
+                    type: array
+                    items:
+                      type: string
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to fetch categories from the database
 
 components:
   schemas:
