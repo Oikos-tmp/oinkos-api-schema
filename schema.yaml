@@ -2,7 +2,7 @@
 openapi: 3.0.0
 info:
   title: Oinkos
-  version: 1.0.7
+  version: 1.0.8
 servers:
   - url: https://api.oinkos.samnsc.com
 paths:
@@ -574,6 +574,286 @@ paths:
                           - Unable to fetch categories from the database
                           - Unable to save new category to the database
                           - Failed to save transaction to the database
+  /transaction/{id}:
+    post:
+      description: Skip or revert skipped occurrence of a recurring transaction
+      operationId: post_transaction_id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The transaction's ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+                - occurrence
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - skip
+                    - revert
+                occurrence:
+                  type: integer
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Malformed syntax
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Transaction not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to update transaction
+    patch:
+      description: Edit a transaction
+      operationId: patch_transaction_id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The transaction's ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                value:
+                  type: number
+                paymentType:
+                  type: string
+                  enum:
+                    - creditCard
+                    - debitCard
+                    - cash
+                    - directTransfer
+                category:
+                  type: string
+                  maxLength: 100
+                transactionDate:
+                  description: Only for and required by the unique transaction type
+                  type: string
+                  format: date-time
+                startingDate:
+                  description: Only for and required by the recurring transaction type
+                  type: string
+                  format: date-time
+                endingDate:
+                  description: Only for the recurring transaction type
+                  type: string
+                  format: date-time
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Malformed syntax
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Transaction not found
+        422:
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Invalid value(s)
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to fetch categories from the database
+                          - Unable to save new category to the database
+                          - Unable to assign new category to transaction
+                          - Unable to update transaction
+    delete:
+      description: Delete a transaction
+      operationId: delete_transaction_id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: The transaction's ID
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    default: false
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                    enum:
+                      - true
+                  reason:
+                    type: string
+                    enum:
+                      - Transaction not found
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Error"
+                  - type: object
+                    properties:
+                      error:
+                        type: boolean
+                        enum:
+                          - true
+                      reason:
+                        type: string
+                        enum:
+                          - Unable to remove transaction from database
   /category:
     get:
       description: Get all categories for the current user
