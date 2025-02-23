@@ -2,7 +2,7 @@
 openapi: 3.0.0
 info:
   title: Oinkos
-  version: 1.0.8
+  version: 1.0.9
 servers:
   - url: https://api.oinkos.samnsc.com
 paths:
@@ -377,36 +377,73 @@ paths:
                   transactions:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        transactionType:
-                          type: string
-                          enum:
-                            - unique
-                            - recurring
-                        title:
-                          type: string
-                        transactionStatus:
-                          type: string
-                          enum:
-                            - credited
-                            - skipped
-                        value:
-                          type: number
-                        paymentType:
-                          type: string
-                          enum:
-                            - creditCard
-                            - debitCard
-                            - cash
-                            - directTransfer
-                        category:
-                          type: string
-                        transactionDate:
-                          type: string
-                          format: date-time
-                        occurrence:
-                          type: integer
+                      oneOf:
+                        - type: object
+                          properties:
+                            transactionType:
+                              type: string
+                              enum:
+                                - unique
+                                - recurring
+                            title:
+                              type: string
+                            transactionStatus:
+                              type: string
+                              enum:
+                                - credited
+                                - skipped
+                            value:
+                              type: number
+                            paymentType:
+                              type: string
+                              enum:
+                                - creditCard
+                                - debitCard
+                                - cash
+                                - directTransfer
+                            category:
+                              type: string
+                            transactionDate:
+                              type: string
+                              format: date-time
+                        - type: object
+                          properties:
+                            transactionType:
+                              type: string
+                              enum:
+                                - unique
+                                - recurring
+                            title:
+                              type: string
+                            transactionStatus:
+                              type: string
+                              enum:
+                                - credited
+                                - skipped
+                            value:
+                              type: number
+                            paymentType:
+                              type: string
+                              enum:
+                                - creditCard
+                                - debitCard
+                                - cash
+                                - directTransfer
+                            category:
+                              type: string
+                            transactionDate:
+                              type: string
+                              format: date-time
+                            occurrence:
+                              type: integer
+                            startingDate:
+                              type: string
+                              format: date-time
+                            endingDate:
+                              type: string
+                              format: date-time
+                              nullable: true
+
         400:
           description: Bad Request
           content:
